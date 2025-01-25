@@ -6,7 +6,7 @@
   <title>Enhanced Science and Nature Quiz</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
       padding: 0;
       background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -19,38 +19,83 @@
 
     #quiz-container {
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      padding: 20px;
-      max-width: 700px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      max-width: 800px;
       width: 90%;
       text-align: center;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(15px);
     }
 
-    h1, h2 {
-      margin: 0;
+    h1 {
+      margin: 0 0 20px 0;
       font-weight: 600;
+      font-size: 32px;
+    }
+
+    #categories {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    #categories label {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    #categories select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #2c3e50;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #start-button {
+      background: #3498db;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background 0.3s;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    #start-button:hover {
+      background: #2980b9;
     }
 
     #question {
-      font-size: 24px;
-      margin: 20px 0;
+      font-size: 26px;
+      margin: 25px 0;
+      font-weight: 500;
     }
 
     .option {
       background: rgba(255, 255, 255, 0.2);
       color: white;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
+      padding: 15px;
+      margin: 12px 0;
+      border-radius: 12px;
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
+      font-size: 18px;
     }
 
     .option:hover {
       background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
     }
 
     .option.correct {
@@ -62,19 +107,20 @@
     }
 
     #timer, #score, #progress-bar {
-      font-size: 18px;
-      margin: 10px 0;
+      font-size: 20px;
+      margin: 15px 0;
     }
 
     #next-button {
       background: #3498db;
       color: white;
-      padding: 12px 24px;
+      padding: 15px 30px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 18px;
       transition: background 0.3s;
+      margin-top: 20px;
     }
 
     #next-button:hover {
@@ -88,59 +134,61 @@
 
     #progress-bar {
       background: white;
-      height: 10px;
-      border-radius: 5px;
+      height: 12px;
+      border-radius: 6px;
       overflow: hidden;
-      margin-top: 15px;
+      margin-top: 20px;
     }
 
     #progress {
       background: #3498db;
       height: 100%;
       width: 0;
+      transition: width 0.5s ease;
     }
 
     #leaderboard, #summary {
       text-align: left;
-      margin-top: 20px;
+      margin-top: 25px;
     }
 
     #hint-button {
       background: #e67e22;
       color: white;
-      padding: 10px 20px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
-      font-size: 14px;
-      margin: 10px 0;
+      font-size: 16px;
+      margin: 15px 0;
+      transition: background 0.3s;
     }
 
     #hint-button:hover {
       background: #d35400;
     }
 
-    #categories {
-      margin: 10px 0;
-    }
-
     @media (max-width: 480px) {
       #quiz-container {
-        padding: 15px;
+        padding: 20px;
+      }
+
+      #categories {
+        grid-template-columns: 1fr;
       }
 
       #question {
-        font-size: 20px;
+        font-size: 22px;
       }
 
       .option {
-        padding: 10px;
-        font-size: 14px;
+        padding: 12px;
+        font-size: 16px;
       }
 
       #next-button, #hint-button {
-        padding: 8px 16px;
-        font-size: 14px;
+        padding: 10px 20px;
+        font-size: 16px;
       }
     }
   </style>
@@ -150,22 +198,25 @@
     <h1>Enhanced Science and Nature Quiz</h1>
 
     <div id="categories">
-      <label for="category">Choose Category:</label>
-      <select id="category">
-        <option value="17">Science & Nature</option>
-        <option value="18">Computers</option>
-        <option value="19">Mathematics</option>
-        <option value="20">Mythology</option>
-      </select>
-
-      <label for="difficulty">Choose Difficulty:</label>
-      <select id="difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-      <button id="start-button">Start Quiz</button>
+      <div>
+        <label for="category">Choose Category:</label>
+        <select id="category">
+          <option value="17">Science & Nature</option>
+          <option value="18">Computers</option>
+          <option value="19">Mathematics</option>
+        </select>
+      </div>
+      <div>
+        <label for="difficulty">Choose Difficulty:</label>
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
     </div>
+
+    <button id="start-button">Start Quiz</button>
 
     <div id="timer">Time Left: 30s</div>
     <div id="question"></div>
