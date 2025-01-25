@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Science and Nature Quiz</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* Quiz Container */
+    #quiz-container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Question */
+    #question {
+      font-size: 24px;
+      margin: 20px 0;
+      color: white;
+    }
+
+    /* Options */
+    .option {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .option:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .option.correct {
+      background: #2ecc71;
+    }
+
+    .option.incorrect {
+      background: #e74c3c;
+    }
+
+    /* Score */
+    #score {
+      font-size: 18px;
+      margin: 20px 0;
+      color: white;
+    }
+
+    /* Next Button */
+    #next-button {
+      background: #3498db;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+
+    #next-button:hover {
+      background: #2980b9;
+    }
+
+    #next-button:disabled {
+      background: #7f8c8d;
+      cursor: not-allowed;
+    }
+
+    /* Footer */
+    #footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    #footer a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    #footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Mobile-friendly adjustments */
+    @media (max-width: 480px) {
+      #quiz-container {
+        padding: 15px;
+      }
+
+      #question {
+        font-size: 20px;
+      }
+
+      .option {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      #next-button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Quiz Container -->
+  <div id="quiz-container">
+    <h1>Science and Nature Quiz</h1>
+    <div id="question">Loading question...</div>
+    <div id="options">
+      <div class="option" data-correct="false"></div>
+      <div class="option" data-correct="false"></div>
+      <div class="option" data-correct="false"></div>
+      <div class="option" data-correct="false"></div>
+    </div>
+    <div id="score">Score: 0</div>
+    <button id="next-button" disabled>Next Question</button>
+    <div id="footer">
+      Made with ❤️ by <a href="https://github.com/younesbachouche" target="_blank">Younes Bachouche</a>
+    </div>
+  </div>
+
+  <script>
+    let questions = []; // Store all questions
+    let currentQuestionIndex = 0; // Current question index
+    let score = 0; // User's score
+
+    // Fetch questions from Open Trivia Database API
+    async function fetchQuestions() {
+      try {
+        const response = await fetch(
+          "https://opentdb.com/api.php?amount=50&category=17&type=multiple"
+        );
+        const data = await response.json();
+        questions = data.results;
+        loadQuestion();
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+      }
+    }
+
+    // Load the current question
+    function loadQuestion() {
+      const currentQuestion = questions[currentQuestionIndex];
+      document.getElementById("question").textContent = decodeHTML(
+        currentQuestion.question
+      );
+
+      // Combine correct and incorrect answers
+      const options = [
+        currentQuestion.correct_answer,
+        ...currentQuestion.incorrect_answers,
+      ];
+
+      // Shuffle options
+      options.sort(() => Math.random() - 0.5);
+
+      // Display options
+      const optionElements = document.querySelectorAll(".option");
+      optionElements.forEach((option, index) => {
+        option.textContent = decodeHTML(options[index]);
+        option.dataset.correct = options[index] === currentQuestion.correct_answer;
+        option.classList.remove("correct", "incorrect"); // Reset styles
+      });
+
+      // Enable options
+      optionElements.forEach((option) => {
+        option.onclick = () => checkAnswer(option);
+      });
+
+      // Enable Next Button
+      document.getElementById("next-button").disabled = false;
+    }
+
+    // Check the selected answer
+    function checkAnswer(selectedOption) {
+      const options = document.querySelectorAll(".option");
+      options.forEach((option) => {
+        option.onclick = null; // Disable further clicks
+        if (option.dataset.correct === "true") {
+          option.classList.add("correct");
+        } else {
+          option.classList.add("incorrect");
+        }
+      });
+
+      if (selectedOption.dataset.correct === "true") {
+        score++;
+        document.getElementById("score").textContent = `Score: ${score}`;
+      }
+    }
+
+    // Decode HTML entities (e.g., &amp; -> &)
+    function decodeHTML(html) {
+      const textArea = document.createElement("textarea");
+      textArea.innerHTML = html;
+      return textArea.value;
+    }
+
+    // Next button
+    document.getElementById("next-button").addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        alert(`Quiz over! Your final score is ${score}/${questions.length}.`);
+      }
+    });
+
+    // Fetch questions and start the quiz
+    fetchQuestions();
+  </script>
+</body>
+</html>
